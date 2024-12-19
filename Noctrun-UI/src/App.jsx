@@ -1,15 +1,52 @@
-import { useState } from 'react'
-import viteLogo from '/vite.svg'
-import './App.css'
+// import React from 'react';
+// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import LandingPage from './components/LandingPage';  // Make sure to import the LandingPage
+// import Login from './components/Login';
+// import Register from './components/Register';
+// import Dashboard from './components/Dashboard';
 
-function App() {
- 
+// const App = () => {
+//   return (
+//     <Router>
+//       <Routes>
+//         <Route path="/" element={<LandingPage />} />
+//         <Route path="/login" element={<Login />} />
+//         <Route path="/register" element={<Register />} />
+//         <Route path="/dashboard" element={<Dashboard />} />
+//       </Routes>
+//     </Router>
+//   );
+// };
 
+// export default App;
+
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LandingPage from "./components/LandingPage";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Dashboard from "./components/Dashboard";
+import PrivateRoute from "./components/PrivateRoute"; // Import the PrivateRoute component
+
+const App = () => {
   return (
-    <>
-      
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </Router>
+  );
+};
 
-export default App
+export default App;
