@@ -51,9 +51,9 @@ Whether you're managing a small project or overseeing a large team, TaskFlow Pro
 3. **Frontend Setup**:
    - Navigate to the frontend directory and install dependencies:
      ```bash
-     cd frontend
+     cd frontendFile
      npm install
-     npm start
+     npm run dev
      ```
    - The frontend will be available at `http://localhost:3000`.
 
