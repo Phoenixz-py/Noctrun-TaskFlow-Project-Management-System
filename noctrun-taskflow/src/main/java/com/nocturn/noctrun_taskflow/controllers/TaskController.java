@@ -3,9 +3,13 @@ package com.nocturn.noctrun_taskflow.controllers;
 import com.nocturn.noctrun_taskflow.models.Task;
 import com.nocturn.noctrun_taskflow.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -29,10 +33,20 @@ public class TaskController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Create a new task
-    @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskRepository.save(task);
+    @PostMapping("/create-task")
+    @PreAuthorize("hasRole('TEAM_LEAD') or hasRole('ADMIN')")
+    public ResponseEntity<String> createTask(@RequestBody Task task) {
+        // Validate input (e.g., title, deadline, etc.)
+        if (task.getTitle() == null || task.getTitle().isEmpty()) {
+            return ResponseEntity.badRequest().body("Task title is required");
+        }
+        if (task.getDeadline() == null || task.getDeadline().before(new Date())) {
+            return ResponseEntity.badRequest().body("Invalid or past deadline");
+        }
+
+        // Save the task to the database
+        taskRepository.save(task);
+        return ResponseEntity.ok("Task created successfully");
     }
 
     // Update a task

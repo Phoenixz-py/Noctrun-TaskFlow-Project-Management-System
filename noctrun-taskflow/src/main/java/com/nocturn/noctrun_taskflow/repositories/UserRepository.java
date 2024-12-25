@@ -17,5 +17,7 @@ public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findByEmail(String email);
 
     // You can add more custom query methods if needed
+
+
 }
 

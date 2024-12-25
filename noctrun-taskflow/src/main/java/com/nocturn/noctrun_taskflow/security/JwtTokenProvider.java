@@ -68,6 +68,7 @@
 
 package com.nocturn.noctrun_taskflow.security;
 
+import com.nocturn.noctrun_taskflow.models.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -101,22 +102,45 @@ public class JwtTokenProvider {
 }
 
 
-    // Generate Token from Authentication
-    public String generateToken(Authentication authentication) {
-        // Get the username and authorities from the authentication object
-        String username = authentication.getName();
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+//    // Generate Token from Authentication
+//    public String generateToken(Authentication authentication) {
+//        // Get the username and authorities from the authentication object
+//        String username = authentication.getName();
+//        String authorities = authentication.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .collect(Collectors.joining(","));
+//
+//        // Build and sign the JWT with additional claims (authorities)
+//        return Jwts.builder()
+//                .setSubject(username)
+//                .claim("roles", authorities)  // Add roles as custom claim
+//                .setIssuedAt(new Date())
+//                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+//                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+//                .compact();
+//    }
 
-        // Build and sign the JWT with additional claims (authorities)
+    public String generateToken(Authentication authentication) {
+        // Get the username from the authentication object
+        String username = authentication.getName();
+
+        // Extract the role from the authentication (this assumes the role is stored in authentication's authorities)
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority) // Extract role names (e.g., "ROLE_USER")
+                .findFirst()                        // Assuming one role per user for simplicity
+                .orElse("USER");                    // Default to "USER" if no role found
+
+        // Remove "ROLE_" prefix if it's present to match database role (e.g., "ROLE_USER" -> "USER")
+        role = role.replace("ROLE_", "");
+
+        // Build and sign the JWT with additional claims (role as string)
         return Jwts.builder()
-                .setSubject(username)
-                .claim("roles", authorities)  // Add roles as custom claim
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
+                .setSubject(username)                // Set the username as the subject
+                .claim("role", role)                 // Add the role as a string (e.g., "USER")
+                .setIssuedAt(new Date())             // Current time as issue date
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs)) // Set token expiration
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // Sign with the secret key
+                .compact();                          // Compact the JWT into a string
     }
 
     // Validate Token using parseSignedClaims()
@@ -164,4 +188,20 @@ public class JwtTokenProvider {
             return null;
         }
     }
+
+
+    public String getRoleFromToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return claims.get("role", String.class); // Return the role as a string
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

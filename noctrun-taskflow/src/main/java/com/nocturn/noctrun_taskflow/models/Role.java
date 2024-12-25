@@ -1,10 +1,3 @@
-//package com.nocturn.noctrun_taskflow.models;
-//
-//public enum Role {
-//    USER,
-//    TEAM_LEAD,
-//    ADMIN
-//}
 package com.nocturn.noctrun_taskflow.models;
 
 public enum Role {
