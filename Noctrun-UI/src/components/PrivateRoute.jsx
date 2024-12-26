@@ -1,16 +1,15 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import React from "react";
+import { Navigate } from "react-router-dom";
 
 const PrivateRoute = ({ children }) => {
-  // Check if the user is logged in (using localStorage, session, or context)
-  const isLoggedIn = localStorage.getItem('user'); // Assuming 'user' is stored after login
+  const token = localStorage.getItem("token");
 
-  if (!isLoggedIn) {
-    // Redirect to login page if not logged in
-    return <Navigate to="/login" replace />;
+  if (!token) {
+    // If no token is found, redirect to login page
+    return <Navigate to="/login" />;
   }
 
-  // Allow access to the dashboard if logged in
+  // If token is present, render the children
   return children;
 };
 

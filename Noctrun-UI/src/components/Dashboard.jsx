@@ -4,21 +4,24 @@ const Dashboard = () => {
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    // Check for token and extract the role (this assumes you stored the role in the token or fetched it from an API)
     const token = localStorage.getItem('token');
     if (token) {
-      // If the token is present, extract role from it (you might need a real decoding mechanism here)
-      // For now, assuming role is stored directly in the token payload
-      const decodedToken = JSON.parse(atob(token.split('.')[1])); // Simple JWT decoding (no verification)
-      setUserRole(decodedToken.role);
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+        setUserRole(payload.role); // Use the 'role' field from the payload
+      } catch (err) {
+        console.error('Error decoding token:', err);
+        setUserRole(null); // Handle invalid token
+      }
     }
   }, []);
+  
 
   return (
     <div>
       <h2>Dashboard</h2>
 
-      {userRole === 'admin' && (
+      {userRole === 'ADMIN' && (
         <div>
           <h3>Welcome, Admin!</h3>
           <p>Here you can manage the entire system, users, and projects.</p>
@@ -26,7 +29,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {userRole === 'team-lead' && (
+      {userRole === 'TEAM_LEAD' && (
         <div>
           <h3>Welcome, Team Lead!</h3>
           <p>You can manage tasks and assign them to team members.</p>
@@ -34,7 +37,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {userRole === 'staff' && (
+      {userRole === 'USER' && (
         <div>
           <h3>Welcome, Staff Member!</h3>
           <p>You can view and work on tasks assigned to you.</p>
