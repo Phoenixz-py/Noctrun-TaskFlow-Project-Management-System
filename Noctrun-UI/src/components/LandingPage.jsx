@@ -10,10 +10,10 @@ const LandingPage = () => {
       className="w-full min-h-screen bg-cover bg-center relative overflow-hidden"
       style={{
         backgroundImage:
-          "url('https://getwallpapers.com/wallpaper/full/9/d/c/1429986-gorgeous-black-light-background-1920x1080-samsung.jpg')",
+          "url('./src/assets/bg.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        height: "100vh", // Ensures the height covers the full viewport
+        height: "100vh",
       }}
     >
       {/* Overlay */}
