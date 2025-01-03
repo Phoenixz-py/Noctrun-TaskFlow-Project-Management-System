@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").permitAll()  // Public access to user-related APIs
                         .requestMatchers("/api/auth/**").permitAll()  // Public access to authentication APIs
                         .requestMatchers("/api/projects/**").hasAnyRole("TEAM_LEAD", "ADMIN") // Only accessible by Team Lead & Admin
-                        .requestMatchers("/api/tasks/**").hasAnyRole("TEAM_LEAD", "ADMIN")
+                        .requestMatchers("/api/tasks/**").permitAll() //the has role access is applied per request not all
                         .anyRequest().authenticated()  // Auth required for other endpoints
                 )
                 // Add JwtAuthenticationFilter to the filter chain before UsernamePasswordAuthenticationFilter

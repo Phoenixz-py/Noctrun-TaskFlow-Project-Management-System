@@ -1,8 +1,10 @@
 package com.nocturn.noctrun_taskflow.controllers;
 
 import com.nocturn.noctrun_taskflow.models.Project;
+import com.nocturn.noctrun_taskflow.models.Task;
 import com.nocturn.noctrun_taskflow.models.User;
 import com.nocturn.noctrun_taskflow.repositories.ProjectRepository;
+import com.nocturn.noctrun_taskflow.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +18,16 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/projects")
 public class ProjectController {
-
     @Autowired
     private ProjectRepository projectRepository;
 
-    // Get all projects
-    @GetMapping
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll(); // Use findAll() method from JpaRepository
-    }
+    @Autowired
+    private TaskRepository taskRepository;
+//    // Get all tasks
+//    @GetMapping("/All")
+//    public List<Task> getAllTasks() {
+//        return taskRepository.findAll();
+//    }
 
     // Get a project by ID
     @GetMapping("/{id}")
@@ -37,7 +40,7 @@ public class ProjectController {
     // Create a new project
     @PostMapping
     public Project createProject(@RequestBody Project project) {
-        return projectRepository.save(project); // Use save() method from JpaRepository
+        return projectRepository.save(project);
     }
 
     // Update a project
@@ -52,44 +55,83 @@ public class ProjectController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
+//    @Autowired
+//    private UserRepository userRepository;
+//    @PostMapping("/{projectId}/assign/{userId}")
+//    @PreAuthorize("hasRole('TEAM_LEAD') or hasRole('ADMIN')")
+//    public ResponseEntity<String> assignUserToProject(@PathVariable String projectId, @PathVariable String userId) {
+//        // Fetch the project by ID
+//        Optional<Project> optionalProject = projectRepository.findByProjectId(projectId);
+////        if (optionalProject.isEmpty()) {
+////            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Project not found");
+////        }
+//
+//        // Fetch the user by ID
+//        Optional<User> optionalUser = userRepository.findById(userId);
+//        if (optionalUser.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+//        }
+//
+//        // Assign the user to the project
+//        Project project = optionalProject.get();
+//
+//        if (project.getTeamIds() == null) {
+//            project.setTeamIds(new ArrayList<>());
+//        }
+//
+//        // Check if the user is already assigned
+//        if (project.getTeamIds().contains(userId)) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is already assigned to this project");
+//        }
+//
+//        // Add the user to the teamIds list
+//        project.getTeamIds().add(userId);
+//
+//        // Save the updated project
+//        projectRepository.save(project);
+//
+//        return ResponseEntity.ok("User assigned to project successfully");
+//    }
 
-    @Autowired
-    private UserRepository userRepository;
-    @PostMapping("/{projectId}/assign/{userId}")
-    @PreAuthorize("hasRole('TEAM_LEAD') or hasRole('ADMIN')")
-    public ResponseEntity<String> assignUserToProject(@PathVariable String projectId, @PathVariable String userId) {
-        // Fetch the project by ID
-        Optional<Project> optionalProject = projectRepository.findById(projectId);
-        if (optionalProject.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Project not found");
-        }
 
-        // Fetch the user by ID
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
+//    private UserRepository userRepository;
+//    @PostMapping("/{projectId}/assign/{userId}")
+//    @PreAuthorize("hasRole('TEAM_LEAD') or hasRole('ADMIN')")
+//    public ResponseEntity<String> assignUserToProject(@PathVariable("projectId") String projectId, @PathVariable("userId") String userId) {
+//        // Fetch the project by ID (MongoDB automatically uses the _id field)
+//        Optional<Project> optionalProject = projectRepository.findById(projectId);  // Use findById
+//
+//        if (optionalProject.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Project not found");
+//        }
+//
+//        // Fetch the user by ID
+//        Optional<User> optionalUser = userRepository.findById(userId);
+//        if (optionalUser.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+//        }
+//
+//        // Assign the user to the project
+//        Project project = optionalProject.get();
+//
+//        if (project.getTeamIds() == null) {
+//            project.setTeamIds(new ArrayList<>());
+//        }
+//
+//        // Check if the user is already assigned
+//        if (project.getTeamIds().contains(userId)) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is already assigned to this project");
+//        }
+//
+//        // Add the user to the teamIds list
+//        project.getTeamIds().add(userId);
+//
+//        // Save the updated project
+//        projectRepository.save(project);
+//
+//        return ResponseEntity.ok("User assigned to project successfully");
+//    }
 
-        // Assign the user to the project
-        Project project = optionalProject.get();
-
-        if (project.getTeamIds() == null) {
-            project.setTeamIds(new ArrayList<>());
-        }
-
-        // Check if the user is already assigned
-        if (project.getTeamIds().contains(userId)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is already assigned to this project");
-        }
-
-        // Add the user to the teamIds list
-        project.getTeamIds().add(userId);
-
-        // Save the updated project
-        projectRepository.save(project);
-
-        return ResponseEntity.ok("User assigned to project successfully");
-    }
 
 
     @DeleteMapping("/{id}")

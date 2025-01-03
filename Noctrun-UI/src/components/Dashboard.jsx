@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TeamLead from './teamlead/teamlead';
 
 const Dashboard = () => {
   const [userRole, setUserRole] = useState(null);
@@ -29,13 +30,14 @@ const Dashboard = () => {
         </div>
       )}
 
-      {userRole === 'TEAM_LEAD' && (
-        <div>
-          <h3>Welcome, Team Lead!</h3>
-          <p>You can manage tasks and assign them to team members.</p>
-          {/* Add Team Lead-specific features here */}
-        </div>
-      )}
+{userRole === 'TEAM_LEAD' && (
+  <div>
+    <h3 className="text-2xl font-semibold mb-4">Welcome, Team Lead!</h3>
+    <p className="mb-6">You can manage tasks and assign them to team members.</p>
+    <TeamLead />
+  </div>
+)}
+
 
       {userRole === 'USER' && (
         <div>

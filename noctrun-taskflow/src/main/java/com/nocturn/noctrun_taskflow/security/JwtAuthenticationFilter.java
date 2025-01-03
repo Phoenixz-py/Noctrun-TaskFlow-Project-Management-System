@@ -133,25 +133,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && tokenProvider.validateToken(token)) {
             String username = tokenProvider.getUsernameFromToken(token);
-            String role = tokenProvider.getRoleFromToken(token); // Extract role from the token
+            String role = tokenProvider.getRoleFromToken(token);
 
-            // Check if the token is valid and username is extracted
+            // Log role for debugging
+            logger.info("Extracted role from JWT: " + role);
+
             if (username != null && role != null) {
-                // Convert role to GrantedAuthority (prepend "ROLE_" to match Spring Security's expectations)
-                GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+                GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role); // Ensure ROLE_ prefix is added
 
-                // Create an authentication object with username and role as authority
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(username, null, List.of(authority));
 
-                // Set the authentication in the context for the current thread
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 
-        // Continue with the next filter in the chain
         filterChain.doFilter(request, response);
     }
+
 
     private String getJwtFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");

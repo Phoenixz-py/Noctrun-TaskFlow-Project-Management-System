@@ -20,7 +20,8 @@ public class TaskController {
     private TaskRepository taskRepository;
 
     // Get all tasks
-    @GetMapping
+    @GetMapping("/All")
+    @PreAuthorize("hasRole('TEAM_LEAD') or hasRole('ADMIN')")
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }

@@ -70,9 +70,12 @@ package com.nocturn.noctrun_taskflow.security;
 
 import com.nocturn.noctrun_taskflow.models.Role;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -174,34 +177,62 @@ public class JwtTokenProvider {
         }
     }
 
-    // Get roles from token (optional method for role-based access control)
-    public String getRolesFromToken(String token) {
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+//    // Get roles from token (optional method for role-based access control)
+//    public String getRolesFromToken(String token) {
+//        try {
+//            Claims claims = Jwts.parser()
+//                    .setSigningKey(getSigningKey())
+//                    .build()
+//                    .parseClaimsJws(token)
+//                    .getBody();
+//
+//            return claims.get("roles", String.class); // Return roles stored as custom claim
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
 
-            return claims.get("roles", String.class); // Return roles stored as custom claim
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
+//    public String getRoleFromToken(String token) {
+//        try {
+//            Claims claims = Jwts.parser()
+//                    .setSigningKey(getSigningKey())
+//                    .build()
+//                    .parseClaimsJws(token)
+//                    .getBody();
+//
+//            return claims.get("role", String.class); // Return the role as a string
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
+private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     public String getRoleFromToken(String token) {
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+    try {
+        Claims claims = Jwts.parser()
+                .setSigningKey(getSigningKey())  // Ensure you are using the correct signing key
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
 
-            return claims.get("role", String.class); // Return the role as a string
-        } catch (Exception e) {
-            return null;
+        // Check if the role is present in the claims
+        String role = claims.get("role", String.class);
+        if (role == null) {
+            // Log or throw an exception if role is not found
+            logger.warn("Role not found in token payload");
+            return null;  // Or you can throw an exception here
         }
+
+        return role;
+    } catch (ExpiredJwtException e) {
+        logger.error("Token is expired", e);
+        return null;  // Handle token expiry specifically
+    } catch (Exception e) {
+        logger.error("Error parsing token", e);  // Log any other exceptions that occur
+        return null;
     }
+}
+
 
 }

@@ -10,7 +10,7 @@ public class Task {
     @Id
     private String id; // Unique Task ID
 
-    private String projectId;   // Associated Project ID
+//    private String projectId;   // Associated Project ID
     private String assignedTo;  // ID of the User assigned this task
     private String title;       // Task title
     private String description; // Task description
@@ -23,9 +23,9 @@ public class Task {
         return id;
     }
 
-    public String getProjectId() {
-        return projectId;
-    }
+//    public String getProjectId() {
+//        return projectId;
+//    }
 
     public String getAssignedTo() {
         return assignedTo;
@@ -52,14 +52,6 @@ public class Task {
     }
 
     // Setters
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
-
     public void setAssignedTo(String assignedTo) {
         this.assignedTo = assignedTo;
     }
