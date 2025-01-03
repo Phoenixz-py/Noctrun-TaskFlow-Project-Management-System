@@ -1,28 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import TeamLead from './teamlead/teamlead';
+import React, { useState, useEffect } from "react";
+import TeamLead from "./teamlead/teamlead";
 
 const Dashboard = () => {
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+        const payload = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
         setUserRole(payload.role); // Use the 'role' field from the payload
       } catch (err) {
-        console.error('Error decoding token:', err);
+        console.error("Error decoding token:", err);
         setUserRole(null); // Handle invalid token
       }
     }
   }, []);
-  
 
   return (
     <div>
-      <h2>Dashboard</h2>
-
-      {userRole === 'ADMIN' && (
+      {userRole === "ADMIN" && (
         <div>
           <h3>Welcome, Admin!</h3>
           <p>Here you can manage the entire system, users, and projects.</p>
@@ -30,16 +27,13 @@ const Dashboard = () => {
         </div>
       )}
 
-{userRole === 'TEAM_LEAD' && (
-  <div>
-    <h3 className="text-2xl font-semibold mb-4">Welcome, Team Lead!</h3>
-    <p className="mb-6">You can manage tasks and assign them to team members.</p>
-    <TeamLead />
-  </div>
-)}
+      {userRole === "TEAM_LEAD" && (
+        <div>
+          <TeamLead />
+        </div>
+      )}
 
-
-      {userRole === 'USER' && (
+      {userRole === "USER" && (
         <div>
           <h3>Welcome, Staff Member!</h3>
           <p>You can view and work on tasks assigned to you.</p>
