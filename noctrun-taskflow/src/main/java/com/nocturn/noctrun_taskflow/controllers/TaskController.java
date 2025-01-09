@@ -26,13 +26,13 @@ public class TaskController {
         return taskRepository.findAll();
     }
 
-    // Get a task by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable String id) {
-        return taskRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+//    // Get a task by ID
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Task> getTaskById(@PathVariable String id) {
+//        return taskRepository.findById(id)
+//                .map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.notFound().build());
+//    }
 
     @PostMapping("/create-task")
     @PreAuthorize("hasRole('TEAM_LEAD') or hasRole('ADMIN')")

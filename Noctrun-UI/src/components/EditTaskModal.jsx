@@ -2,15 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 
-const AddTaskModal = ({ isOpen, onClose, creator }) => {
-  const [formData, setFormData] = useState({
-    assignedTo: "",
-    title: "",
-    description: "",
-    status: "TO-DO",
-    priority: 1,
-    deadline: "",
-  });
+const EditTaskModal = ({ isOpen, onClose, taskId, taskDetails, onTaskUpdated }) => {
+  const [formData, setFormData] = useState(taskDetails || {});
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
@@ -27,10 +20,9 @@ const AddTaskModal = ({ isOpen, onClose, creator }) => {
         return;
       }
 
-      const dataToSend = { ...formData, createdBy: creator };
-      await axios.post(
-        "http://localhost:8080/api/tasks/create-task",
-        dataToSend,
+      const response = await axios.put(
+        `http://localhost:8080/api/tasks/${taskId}`,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,10 +30,11 @@ const AddTaskModal = ({ isOpen, onClose, creator }) => {
         }
       );
 
-      alert("Task added successfully!");
+      alert("Task updated successfully!");
+      onTaskUpdated(response.data); // Update the task in the parent component
       onClose(); // Close modal after successful submission
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to add task");
+      setError(err.response?.data?.message || "Failed to update task");
     }
   };
 
@@ -59,75 +52,50 @@ const AddTaskModal = ({ isOpen, onClose, creator }) => {
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 300 }}
       >
-        <h2 className="text-2xl font-bold text-center mb-4">Add New Task</h2>
+        <h2 className="text-2xl font-bold text-center mb-4">Edit Task</h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Assigned To */}
-          <div className="relative">
-            <label
-              htmlFor="assignedTo"
-              className="text-gray-600 text-sm mb-1 block"
-            >
-              Assigned To
-            </label>
-            <input
-              type="text"
-              id="assignedTo"
-              name="assignedTo"
-              value={formData.assignedTo}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
-              placeholder="Enter username"
-              required
-            />
-          </div>
-
           {/* Title */}
-          <div className="relative">
-            <label htmlFor="title" className="text-gray-600 text-sm mb-1 block">
+          <div>
+            <label htmlFor="title" className="text-gray-600 text-sm">
               Title
             </label>
             <input
               type="text"
               id="title"
               name="title"
-              value={formData.title}
+              value={formData.title || ""}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
-              placeholder="Enter task title"
               required
             />
           </div>
 
           {/* Description */}
-          <div className="relative">
-            <label
-              htmlFor="description"
-              className="text-gray-600 text-sm mb-1 block"
-            >
+          <div>
+            <label htmlFor="description" className="text-gray-600 text-sm">
               Description
             </label>
             <textarea
               id="description"
               name="description"
-              value={formData.description}
+              value={formData.description || ""}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
-              placeholder="Enter task description"
               rows="3"
               required
             />
           </div>
 
           {/* Status */}
-          <div className="relative">
-            <label htmlFor="status" className="text-gray-600 text-sm mb-1 block">
+          <div>
+            <label htmlFor="status" className="text-gray-600 text-sm">
               Status
             </label>
             <select
               id="status"
               name="status"
-              value={formData.status}
+              value={formData.status || ""}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
             >
@@ -138,18 +106,15 @@ const AddTaskModal = ({ isOpen, onClose, creator }) => {
           </div>
 
           {/* Priority */}
-          <div className="relative">
-            <label
-              htmlFor="priority"
-              className="text-gray-600 text-sm mb-1 block"
-            >
+          <div>
+            <label htmlFor="priority" className="text-gray-600 text-sm">
               Priority
             </label>
             <input
               type="number"
               id="priority"
               name="priority"
-              value={formData.priority}
+              value={formData.priority || 1}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
               min="1"
@@ -159,18 +124,31 @@ const AddTaskModal = ({ isOpen, onClose, creator }) => {
           </div>
 
           {/* Deadline */}
-          <div className="relative">
-            <label
-              htmlFor="deadline"
-              className="text-gray-600 text-sm mb-1 block"
-            >
+          <div>
+            <label htmlFor="deadline" className="text-gray-600 text-sm">
               Deadline
             </label>
             <input
               type="datetime-local"
               id="deadline"
               name="deadline"
-              value={formData.deadline}
+              value={formData.deadline || ""}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+
+          {/* Assigned To */}
+          <div>
+            <label htmlFor="assignedTo" className="text-gray-600 text-sm">
+              Assigned To
+            </label>
+            <input
+              type="text"
+              id="assignedTo"
+              name="assignedTo"
+              value={formData.assignedTo || ""}
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
               required
@@ -190,7 +168,7 @@ const AddTaskModal = ({ isOpen, onClose, creator }) => {
               type="submit"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
             >
-              Add Task
+              Save Changes
             </button>
           </div>
         </form>
@@ -199,4 +177,4 @@ const AddTaskModal = ({ isOpen, onClose, creator }) => {
   );
 };
 
-export default AddTaskModal;
+export default EditTaskModal;
